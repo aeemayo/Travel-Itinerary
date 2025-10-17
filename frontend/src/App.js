@@ -111,7 +111,7 @@ function App() {
       <div className="container">
         <header className="header">
           <h1>✈️ AI Travel Itinerary Builder</h1>
-          <p>Powered by ROMA - Create your perfect travel plan in seconds</p>
+          <p>Powered by S.A.F - Create your perfect travel plan in seconds</p>
         </header>
 
         <div className="main-content">
@@ -201,7 +201,7 @@ function App() {
             {loading && (
               <div className="loading">
                 <div className="spinner"></div>
-                <p>ROMA is crafting your perfect itinerary...</p>
+                <p>S.A.F is crafting your perfect itinerary...</p>
               </div>
             )}
 

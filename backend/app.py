@@ -3,7 +3,12 @@ from flask_cors import CORS
 import os
 from dotenv import load_dotenv
 import logging
-from sentientresearchagent.framework_entry import SimpleSentientAgent
+import requests
+import json
+import urllib3
+
+# Disable SSL warnings (optional, for development only)
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Load environment variables
 load_dotenv()
@@ -11,41 +16,71 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# Suppress the logging level warning by checking if PLAN level already exists
-# This prevents the error when creating multiple agent instances
-if not hasattr(logging, 'PLAN'):
-    try:
-        logging.addLevelName(25, 'PLAN')
-        logging.PLAN = 25
-    except Exception:
-        pass  # Level already exists, ignore
-
-# Initialize a single agent instance to reuse across requests
-_agent_instance = None
-
-def get_agent():
-    """Get or create the ROMA agent instance"""
-    global _agent_instance
-    if _agent_instance is None:
-        _agent_instance = SimpleSentientAgent.create()
-    return _agent_instance
+# OpenRouter API configuration
+OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY')
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
 # Verify API key is set
-if not os.getenv('OPENAI_API_KEY'):
-    print("WARNING: OPENAI_API_KEY not set. Please add it to .env file")
+if not OPENROUTER_API_KEY:
+    print("WARNING: OPENROUTER_API_KEY not set. Please add it to .env file")
+
+def call_openrouter(prompt: str, max_tokens: int = 2000) -> str:
+    """
+    Call OpenRouter API with the given prompt
+    """
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "HTTP-Referer": "http://localhost:5000",
+        "X-Title": "Travel Itinerary Builder",
+        "Content-Type": "application/json"
+    }
+    
+    data = {
+        "model": "openai/gpt-3.5-turbo",  # You can change this to other models
+        "messages": [
+            {
+                "role": "system",
+                "content": "You are a helpful travel assistant with expertise in creating detailed travel itineraries."
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        "max_tokens": max_tokens,
+        "temperature": 0.7
+    }
+    
+    try:
+        response = requests.post(
+            f"{OPENROUTER_BASE_URL}/chat/completions",
+            headers=headers,
+            json=data,
+            timeout=30,
+            verify=False  # Disable SSL verification (for troubleshooting)
+        )
+        response.raise_for_status()
+        
+        result = response.json()
+        return result['choices'][0]['message']['content']
+    except requests.exceptions.SSLError as e:
+        print(f"SSL Error: {str(e)}")
+        raise Exception(f"SSL Connection Error: {str(e)}. Try updating certifi: pip install --upgrade certifi")
+    except requests.exceptions.RequestException as e:
+        raise Exception(f"OpenRouter API error: {str(e)}")
 
 @app.route('/health', methods=['GET'])
 def health_check():
     """Health check endpoint"""
     return jsonify({
         'status': 'healthy',
-        'message': 'Travel Itinerary Builder API is running'
+        'message': 'Sentient Agent Framework API is running'
     })
 
 @app.route('/api/generate-itinerary', methods=['POST'])
 def generate_itinerary():
     """
-    Generate a travel itinerary using ROMA agent
+    Generate a travel itinerary using OpenRouter API
     """
     try:
         data = request.json
@@ -60,7 +95,7 @@ def generate_itinerary():
         if not destination:
             return jsonify({'error': 'Destination is required'}), 400
         
-        # Build the prompt for ROMA
+        # Build the prompt
         prompt = f"""Create a detailed travel itinerary for a {days}-day trip to {destination}.
 
 Budget Level: {budget}
@@ -79,15 +114,8 @@ Please provide:
 
 Format the response in a clear, structured way with proper headings and bullet points."""
 
-        # Use ROMA to generate the itinerary
-        agent = get_agent()
-        result = agent.execute(prompt)
-        
-        # Extract the itinerary text from the result
-        if isinstance(result, dict):
-            itinerary_text = result.get('final_output') or result.get('status', 'Failed to generate itinerary')
-        else:
-            itinerary_text = str(result)
+        # Call OpenRouter
+        itinerary_text = call_openrouter(prompt, max_tokens=2000)
         
         return jsonify({
             'success': True,
@@ -107,7 +135,7 @@ Format the response in a clear, structured way with proper headings and bullet p
 @app.route('/api/ask-question', methods=['POST'])
 def ask_question():
     """
-    Ask a specific question about the destination using ROMA
+    Ask a specific question about the destination using OpenRouter API
     """
     try:
         data = request.json
@@ -124,15 +152,8 @@ Question: {question}
 
 Provide a detailed, helpful answer based on current information."""
 
-        # Use ROMA to answer the question
-        agent = get_agent()
-        result = agent.execute(prompt)
-        
-        # Extract the answer text from the result
-        if isinstance(result, dict):
-            answer_text = result.get('final_output') or result.get('status', 'Failed to answer question')
-        else:
-            answer_text = str(result)
+        # Call OpenRouter
+        answer_text = call_openrouter(prompt, max_tokens=1000)
         
         return jsonify({
             'success': True,

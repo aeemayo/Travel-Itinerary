@@ -1,46 +1,84 @@
 """
-Simple ROMA Usage Examples
-This file shows how to use ROMA independently of the Flask app
+Simple OpenRouter Usage Examples
+This file shows how to use OpenRouter API independently of the Flask app
 """
 
-import asyncio
 import os
 from dotenv import load_dotenv
+import requests
+import urllib3
+
+# Disable SSL warnings
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Load environment variables
 load_dotenv()
 
+OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY')
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
-async def example_1_simple_query():
+def call_openrouter(prompt: str, max_tokens: int = 1000) -> str:
+    """Helper function to call OpenRouter API"""
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "HTTP-Referer": "http://localhost:5000",
+        "X-Title": "Travel Itinerary Builder",
+        "Content-Type": "application/json"
+    }
+    
+    data = {
+        "model": "openai/gpt-3.5-turbo",
+        "messages": [
+            {
+                "role": "system",
+                "content": "You are a helpful travel assistant with expertise in travel planning."
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        "max_tokens": max_tokens,
+        "temperature": 0.7
+    }
+    
+    response = requests.post(
+        f"{OPENROUTER_BASE_URL}/chat/completions",
+        headers=headers,
+        json=data,
+        timeout=30,
+        verify=False  # Disable SSL verification
+    )
+    response.raise_for_status()
+    
+    result = response.json()
+    return result['choices'][0]['message']['content']
+
+
+def example_1_simple_query():
     """Example 1: Simple query"""
-    from sentientresearchagent.framework_entry import SentientAgent
     
     print("\n" + "="*60)
     print("Example 1: Simple Query")
     print("="*60)
     
-    agent = SentientAgent.create()
-    
     prompt = "List the top 3 tourist attractions in Rome, Italy with a brief description of each."
     
     print(f"\nPrompt: {prompt}")
-    print("\nRoma is thinking...\n")
+    print("\nOpenRouter is thinking...\n")
     
-    result = await agent.run(prompt)
+    result = call_openrouter(prompt, max_tokens=500)
     
     print("Result:")
     print(result)
 
 
-async def example_2_travel_itinerary():
+def example_2_travel_itinerary():
     """Example 2: Create a travel itinerary"""
-    from sentientresearchagent.framework_entry import SentientAgent
     
     print("\n" + "="*60)
     print("Example 2: Travel Itinerary")
     print("="*60)
-    
-    agent = SentientAgent.create()
     
     prompt = """Create a 3-day travel itinerary for Barcelona, Spain.
 
@@ -55,45 +93,39 @@ Include:
 - Estimated costs"""
     
     print(f"\nPrompt: {prompt}")
-    print("\nRoma is creating your itinerary...\n")
+    print("\nOpenRouter is creating your itinerary...\n")
     
-    result = await agent.run(prompt)
+    result = call_openrouter(prompt, max_tokens=1500)
     
     print("Result:")
     print(result)
 
 
-async def example_3_research_question():
+def example_3_research_question():
     """Example 3: Answer a specific travel question"""
-    from sentientresearchagent.framework_entry import SentientAgent
     
     print("\n" + "="*60)
     print("Example 3: Research Question")
     print("="*60)
     
-    agent = SentientAgent.create()
-    
     prompt = """What are the best months to visit Japan for cherry blossoms?
 Include specific regions and approximate blooming times."""
     
     print(f"\nPrompt: {prompt}")
-    print("\nRoma is researching...\n")
+    print("\nOpenRouter is researching...\n")
     
-    result = await agent.run(prompt)
+    result = call_openrouter(prompt, max_tokens=1000)
     
     print("Result:")
     print(result)
 
 
-async def example_4_complex_planning():
+def example_4_complex_planning():
     """Example 4: Complex multi-city planning"""
-    from sentientresearchagent.framework_entry import SentientAgent
     
     print("\n" + "="*60)
     print("Example 4: Complex Planning")
     print("="*60)
-    
-    agent = SentientAgent.create()
     
     prompt = """Plan a 2-week European trip covering Paris, Amsterdam, and Berlin.
 
@@ -112,9 +144,9 @@ Include:
 5. Travel tips for each city"""
     
     print(f"\nPrompt: {prompt}")
-    print("\nRoma is planning your multi-city trip...\n")
+    print("\nOpenRouter is planning your multi-city trip...\n")
     
-    result = await agent.run(prompt)
+    result = call_openrouter(prompt, max_tokens=2000)
     
     print("Result:")
     print(result)
@@ -123,16 +155,16 @@ Include:
 def main():
     """Run all examples"""
     print("\n" + "="*60)
-    print("ROMA Travel Agent Examples")
+    print("OpenRouter Travel Agent Examples")
     print("="*60)
-    print("\nThese examples demonstrate how ROMA handles different")
+    print("\nThese examples demonstrate how OpenRouter handles different")
     print("types of travel-related queries.")
-    print("\nNote: Each query will use your OpenAI API credits.")
+    print("\nNote: Each query will use your OpenRouter API credits.")
     print("="*60)
     
     # Check API key
-    if not os.getenv('OPENAI_API_KEY'):
-        print("\n❌ ERROR: OPENAI_API_KEY not found!")
+    if not os.getenv('OPENROUTER_API_KEY'):
+        print("\n❌ ERROR: OPENROUTER_API_KEY not found!")
         print("Please add it to your .env file")
         return
     
@@ -168,10 +200,10 @@ def main():
             return
         # Run all examples
         for func in examples.values():
-            asyncio.run(func())
+            func()
             input("\nPress Enter to continue to next example...")
     elif choice in examples:
-        asyncio.run(examples[choice]())
+        examples[choice]()
     else:
         print("\n❌ Invalid choice")
         return
