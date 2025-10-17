@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: travel-itinerary-web
+    env: node
+    region: ohio
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://travel-itinerary-api.onrender.com

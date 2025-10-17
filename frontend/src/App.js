@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './App.css';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 function App() {
   const [formData, setFormData] = useState({
     destination: '',
@@ -54,7 +56,7 @@ function App() {
     setAnswer(null);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/generate-itinerary', formData);
+      const response = await axios.post(`${API_URL}/api/generate-itinerary`, formData);
       setItinerary(response.data);
     } catch (err) {
       setError(err.response?.data?.details || err.message || 'Failed to generate itinerary');
@@ -71,7 +73,7 @@ function App() {
     setAnswer(null);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/ask-question', {
+      const response = await axios.post(`${API_URL}/api/ask-question`, {
         question,
         destination: formData.destination
       });
