@@ -27,6 +27,7 @@ const Profile = () => {
       try {
         const formData = new FormData();
         formData.append('avatar', file);
+        formData.append('email', user.email); // Send email to backend
 
         const response = await fetch('http://localhost:5000/api/user/upload-avatar', {
           method: 'POST',

@@ -68,11 +68,16 @@ const Login = () => {
       const data = await response.json();
 
       if (data.success) {
-        login({
+        // Use user profile data from backend
+        const userProfile = data.user || {
           email: formData.email,
-          id: Date.now(),
-          joinedDate: new Date().toLocaleDateString()
-        });
+          name: '',
+          avatar: ''
+        };
+        userProfile.id = Date.now();
+        userProfile.joinedDate = new Date().toLocaleDateString();
+        
+        login(userProfile);
         navigate('/');
       } else {
         setError(data.error || 'Invalid code');

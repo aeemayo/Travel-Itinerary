@@ -38,6 +38,45 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # In-memory storage for OTP codes (in production, use Redis or database)
 otp_storage = {}
 
+# User database file
+USERS_DB_FILE = os.path.join(os.path.dirname(__file__), 'users_db.json')
+
+def load_users_db():
+    """Load users database from JSON file"""
+    if not os.path.exists(USERS_DB_FILE):
+        return {}
+    try:
+        with open(USERS_DB_FILE, 'r') as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"Error loading users database: {e}")
+        return {}
+
+def save_users_db(users_db):
+    """Save users database to JSON file"""
+    try:
+        with open(USERS_DB_FILE, 'w') as f:
+            json.dump(users_db, f, indent=2)
+        return True
+    except Exception as e:
+        print(f"Error saving users database: {e}")
+        return False
+
+def get_user_profile(email):
+    """Get user profile from database"""
+    users_db = load_users_db()
+    return users_db.get(email, {'email': email, 'name': '', 'avatar': ''})
+
+def update_user_profile(email, updates):
+    """Update user profile in database"""
+    users_db = load_users_db()
+    if email not in users_db:
+        users_db[email] = {'email': email, 'name': '', 'avatar': ''}
+    users_db[email].update(updates)
+    if save_users_db(users_db):
+        return users_db[email]
+    return None
+
 # OpenRouter API configuration
 OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY')
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
@@ -270,9 +309,13 @@ def verify_code():
         # Code is valid, remove it
         del otp_storage[email]
         
+        # Get or create user profile
+        user_profile = get_user_profile(email)
+        
         return jsonify({
             'success': True,
-            'message': 'Code verified successfully'
+            'message': 'Code verified successfully',
+            'user': user_profile
         })
         
     except Exception as e:
@@ -320,6 +363,12 @@ def upload_avatar():
         # Return URL
         avatar_url = f"http://localhost:5000/static/uploads/{unique_filename}"
         
+        # Get email from request (should be sent with the file)
+        email = request.form.get('email')
+        if email:
+            # Save avatar URL to user profile
+            update_user_profile(email, {'avatar': avatar_url})
+        
         return jsonify({
             'success': True,
             'avatar_url': avatar_url
@@ -352,16 +401,25 @@ def update_profile():
         if not email:
             return jsonify({'error': 'Email is required'}), 400
         
-        # In a real app, you would update a database here
-        # For now, just return success
-        return jsonify({
-            'success': True,
-            'message': 'Profile updated successfully',
-            'profile': {
-                'email': email,
-                'name': name
-            }
-        })
+        # Update user profile in database
+        avatar = data.get('avatar', '')
+        updates = {'name': name}
+        if avatar:
+            updates['avatar'] = avatar
+        
+        updated_profile = update_user_profile(email, updates)
+        
+        if updated_profile:
+            return jsonify({
+                'success': True,
+                'message': 'Profile updated successfully',
+                'profile': updated_profile
+            })
+        else:
+            return jsonify({
+                'error': 'Failed to save profile',
+                'details': 'Database write error'
+            }), 500
         
     except Exception as e:
         print(f"Error updating profile: {str(e)}")
