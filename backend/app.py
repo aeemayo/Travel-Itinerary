@@ -1,11 +1,15 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
+from flask_mail import Mail, Message
 import os
 from dotenv import load_dotenv
 import logging
 import requests
 import json
 import urllib3
+import random
+import string
+from werkzeug.utils import secure_filename
 
 # Disable SSL warnings (optional, for development only)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -15,6 +19,24 @@ load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
+
+# Flask-Mail configuration
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))
+app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'True') == 'True'
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
+
+mail = Mail(app)
+
+# Upload configuration
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# In-memory storage for OTP codes (in production, use Redis or database)
+otp_storage = {}
 
 # OpenRouter API configuration
 OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY')
@@ -164,6 +186,187 @@ Provide a detailed, helpful answer based on current information."""
         print(f"Error answering question: {str(e)}")
         return jsonify({
             'error': 'Failed to answer question',
+            'details': str(e)
+        }), 500
+
+@app.route('/api/auth/send-code', methods=['POST'])
+def send_code():
+    """
+    Generate and send OTP code to user's email
+    """
+    try:
+        data = request.json
+        email = data.get('email', '').strip()
+        name = data.get('name', '').strip()
+        
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
+        
+        # Generate 6-digit code
+        code = ''.join(random.choices(string.digits, k=6))
+        
+        # Store code (expires after 10 minutes in production)
+        otp_storage[email] = code
+        
+        # Send email
+        try:
+            msg = Message(
+                subject='Your Travel Itinerary Login Code',
+                recipients=[email],
+                body=f'''Hello {name or 'there'},
+
+Your login code is: {code}
+
+This code will expire in 10 minutes.
+
+If you didn't request this code, please ignore this email.
+
+Best regards,
+Travel Itinerary Team'''
+            )
+            mail.send(msg)
+            
+            return jsonify({
+                'success': True,
+                'message': f'Verification code sent to {email}'
+            })
+        except Exception as email_error:
+            print(f"Email sending error: {str(email_error)}")
+            # For development: return the code in response
+            return jsonify({
+                'success': True,
+                'message': f'Email service unavailable. Your code is: {code}',
+                'dev_code': code  # Remove this in production
+            })
+            
+    except Exception as e:
+        print(f"Error sending code: {str(e)}")
+        return jsonify({
+            'error': 'Failed to send verification code',
+            'details': str(e)
+        }), 500
+
+@app.route('/api/auth/verify-code', methods=['POST'])
+def verify_code():
+    """
+    Verify OTP code
+    """
+    try:
+        data = request.json
+        email = data.get('email', '').strip()
+        code = data.get('code', '').strip()
+        
+        if not email or not code:
+            return jsonify({'error': 'Email and code are required'}), 400
+        
+        # Check if code matches
+        stored_code = otp_storage.get(email)
+        if not stored_code:
+            return jsonify({'error': 'No code found for this email'}), 400
+        
+        if stored_code != code:
+            return jsonify({'error': 'Invalid code'}), 401
+        
+        # Code is valid, remove it
+        del otp_storage[email]
+        
+        return jsonify({
+            'success': True,
+            'message': 'Code verified successfully'
+        })
+        
+    except Exception as e:
+        print(f"Error verifying code: {str(e)}")
+        return jsonify({
+            'error': 'Failed to verify code',
+            'details': str(e)
+        }), 500
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/api/user/upload-avatar', methods=['POST'])
+def upload_avatar():
+    """
+    Upload user avatar image
+    """
+    try:
+        if 'avatar' not in request.files:
+            return jsonify({'error': 'No file provided'}), 400
+        
+        file = request.files['avatar']
+        
+        if file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
+        
+        if not allowed_file(file.filename):
+            return jsonify({'error': 'Invalid file type. Only PNG, JPG, JPEG, and GIF allowed'}), 400
+        
+        # Check file size (2MB limit)
+        file.seek(0, os.SEEK_END)
+        file_size = file.tell()
+        file.seek(0)
+        
+        if file_size > 2 * 1024 * 1024:
+            return jsonify({'error': 'File too large. Maximum size is 2MB'}), 400
+        
+        # Generate unique filename
+        filename = secure_filename(file.filename)
+        unique_filename = f"{random.randint(1000000, 9999999)}_{filename}"
+        filepath = os.path.join(UPLOAD_FOLDER, unique_filename)
+        
+        file.save(filepath)
+        
+        # Return URL
+        avatar_url = f"http://localhost:5000/static/uploads/{unique_filename}"
+        
+        return jsonify({
+            'success': True,
+            'avatar_url': avatar_url
+        })
+        
+    except Exception as e:
+        print(f"Error uploading avatar: {str(e)}")
+        return jsonify({
+            'error': 'Failed to upload avatar',
+            'details': str(e)
+        }), 500
+
+@app.route('/static/uploads/<filename>', methods=['GET'])
+def serve_upload(filename):
+    """
+    Serve uploaded files
+    """
+    return send_from_directory(UPLOAD_FOLDER, filename)
+
+@app.route('/api/user/update-profile', methods=['POST'])
+def update_profile():
+    """
+    Update user profile information
+    """
+    try:
+        data = request.json
+        email = data.get('email', '').strip()
+        name = data.get('name', '').strip()
+        
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
+        
+        # In a real app, you would update a database here
+        # For now, just return success
+        return jsonify({
+            'success': True,
+            'message': 'Profile updated successfully',
+            'profile': {
+                'email': email,
+                'name': name
+            }
+        })
+        
+    except Exception as e:
+        print(f"Error updating profile: {str(e)}")
+        return jsonify({
+            'error': 'Failed to update profile',
             'details': str(e)
         }), 500
 

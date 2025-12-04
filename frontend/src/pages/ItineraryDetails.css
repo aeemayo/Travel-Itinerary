@@ -1,0 +1,241 @@
+.itinerary-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.itinerary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.itinerary-header h1 {
+    font-size: 1.5rem;
+    color: var(--text-dark);
+}
+
+.edit-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--white);
+    color: var(--text-dark);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+    box-shadow: var(--shadow);
+    transition: background-color 0.2s;
+}
+
+.edit-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.hero-section {
+    position: relative;
+    height: 250px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.hero-bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hero-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    padding: 2rem;
+    color: var(--white);
+}
+
+.hero-content h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.hero-date {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin-bottom: 1rem;
+}
+
+.hero-progress-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 400px;
+}
+
+.hero-progress-bar {
+    flex: 1;
+    height: 8px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.hero-progress {
+    height: 100%;
+    background-color: #74C69D;
+}
+
+.hero-days-left {
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.details-grid {
+    display: flex;
+    gap: 2rem;
+}
+
+.plan-section {
+    flex: 1;
+}
+
+.timeline-section {
+    flex: 1;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.action-card {
+    background-color: var(--white);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: var(--shadow);
+}
+
+.action-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.action-icon.flight {
+    background-color: #E0F2F1;
+    color: #00897B;
+}
+
+.action-icon.hotel {
+    background-color: #FFF3E0;
+    color: #FB8C00;
+}
+
+.action-icon.activity {
+    background-color: #E8F5E9;
+    color: #43A047;
+}
+
+.action-icon.budget {
+    background-color: #FFF8E1;
+    color: #FFB300;
+}
+
+.action-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.action-text h4 {
+    font-size: 1rem;
+    margin: 0;
+}
+
+.action-btn {
+    background-color: #4A7C88;
+    color: var(--white);
+    padding: 0.4rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    width: fit-content;
+}
+
+.timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    position: relative;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 9px;
+    top: 10px;
+    bottom: 0;
+    width: 2px;
+    background-color: #E0E0E0;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: 0;
+    top: 6px;
+    width: 20px;
+    height: 20px;
+    background-color: #74C69D;
+    border-radius: 50%;
+    border: 4px solid var(--background-light);
+    z-index: 1;
+}
+
+.timeline-content h4 {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.timeline-card {
+    background-color: var(--white);
+    border-radius: var(--radius);
+    padding: 1rem;
+    display: flex;
+    gap: 1rem;
+    box-shadow: var(--shadow);
+}
+
+.timeline-card img {
+    width: 80px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.timeline-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.timeline-details strong {
+    color: var(--text-dark);
+}
