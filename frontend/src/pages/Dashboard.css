@@ -12,20 +12,20 @@
 
 .create-banner {
     flex: 1;
-    background: linear-gradient(90deg, #529678 0%, #74C69D 100%);
+    background: #F5F5F0;
     border-radius: var(--radius);
     padding: 1.5rem;
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    color: var(--white);
+    color: var(--text-dark);
     box-shadow: var(--shadow);
 }
 
 .create-icon {
     width: 50px;
     height: 50px;
-    background-color: var(--white);
+    background-color: var(--text-dark);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -44,7 +44,7 @@
 
 .search-bar {
     flex: 1;
-    background-color: var(--white);
+    background-color: var(--text-dark);
     border-radius: var(--radius);
     padding: 0.75rem 1rem;
     display: flex;
@@ -54,7 +54,7 @@
 }
 
 .search-icon {
-    color: #F4A261;
+    color: #C97D3E;
     /* Orange/Gold accent */
     background-color: #FFE8D6;
     padding: 8px;
@@ -73,9 +73,9 @@
 }
 
 .explore-btn {
-    background-color: #4A7C88;
+    background-color: #3A5F6B;
     /* Muted Blue/Teal */
-    color: var(--white);
+    color: var(--text-dark);
     padding: 0.5rem 1.5rem;
     border-radius: 20px;
     font-weight: 500;
@@ -126,7 +126,7 @@ h3 {
     right: 0;
     background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
     padding: 2rem;
-    color: var(--white);
+    color: var(--text-dark);
 }
 
 .trip-info h2 {
@@ -169,7 +169,7 @@ h3 {
 }
 
 .view-btn:hover {
-    background-color: var(--white);
+    background-color: var(--text-dark);
 }
 
 .recent-grid {
@@ -179,7 +179,7 @@ h3 {
 
 .recent-card {
     flex: 1;
-    background-color: var(--white);
+    background-color: var(--text-dark);
     border-radius: var(--radius);
     padding-bottom: 1rem;
     overflow: hidden;
@@ -215,8 +215,8 @@ h3 {
 }
 
 .status-tag.planned {
-    background-color: #F4A261;
-    color: var(--white);
+    background-color: #C97D3E;
+    color: var(--text-dark);
 }
 
 .recent-card h4 {

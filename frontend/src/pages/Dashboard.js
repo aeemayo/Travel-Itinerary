@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Plus, MapPin, Calendar, Clock, FileText } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -19,11 +19,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="search-bar">
-          <Search className="search-icon" size={20} />
-          <input type="text" placeholder="Explore Destinations" />
-          <button className="explore-btn" onClick={() => navigate('/explore')}>Explore</button>
-        </div>
+        <button className="explore-btn" onClick={() => navigate('/explore')}>Explore</button>
       </div>
 
       <div className="dashboard-grid">

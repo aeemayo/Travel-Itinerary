@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
-import { LayoutDashboard, Briefcase, Compass, User, Lightbulb } from 'lucide-react';
+import { LayoutDashboard, Compass, User, Lightbulb } from 'lucide-react';
 import './Sidebar.css';
 
 const Sidebar = () => {
@@ -27,11 +27,6 @@ const Sidebar = () => {
                 <NavLink to="/" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
                     <LayoutDashboard size={24} />
                     <span>Dashboard</span>
-                </NavLink>
-
-                <NavLink to="/trips" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
-                    <Briefcase size={24} />
-                    <span>Trips</span>
                 </NavLink>
 
                 <NavLink to="/tips" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>

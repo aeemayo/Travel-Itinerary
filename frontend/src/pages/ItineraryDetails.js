@@ -1,130 +1,297 @@
-import React from 'react';
-import { Plane, Hotel, Map, Wallet, Edit2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Edit2, Sparkles, X, Loader } from 'lucide-react';
 import './ItineraryDetails.css';
 
 const ItineraryDetails = () => {
+    const [showModal, setShowModal] = useState(false);
+    const [showItineraryModal, setShowItineraryModal] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [itinerary, setItinerary] = useState(null);
+    const [formData, setFormData] = useState({
+        destination: '',
+        days: 3,
+        budget: 'moderate',
+        interests: [],
+        additionalNotes: ''
+    });
+
+    const budgetOptions = [
+        { value: 'budget', label: 'Budget ($)' },
+        { value: 'moderate', label: 'Moderate ($$)' },
+        { value: 'luxury', label: 'Luxury ($$$)' }
+    ];
+
+    const interestOptions = [
+        'Culture & History',
+        'Food & Dining',
+        'Adventure',
+        'Nature & Wildlife',
+        'Shopping',
+        'Nightlife',
+        'Photography',
+        'Relaxation'
+    ];
+
+    const handleInterestToggle = (interest) => {
+        setFormData(prev => ({
+            ...prev,
+            interests: prev.interests.includes(interest)
+                ? prev.interests.filter(i => i !== interest)
+                : [...prev.interests, interest]
+        }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
+
+        try {
+            const response = await fetch('http://localhost:5000/api/generate-itinerary', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setItinerary({
+                    destination: data.destination,
+                    days: data.days,
+                    budget: data.budget,
+                    content: data.itinerary
+                });
+                setShowModal(false);
+                // Show itinerary in a stylish modal
+                setTimeout(() => setShowItineraryModal(true), 300);
+            } else {
+                setError(data.error || 'Failed to generate itinerary');
+            }
+        } catch (err) {
+            console.error('Error generating itinerary:', err);
+            setError('Network error. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const formatItinerary = (text) => {
+        // Split the text into lines and format appropriately
+        const lines = text.split('\n');
+        return lines.map((line, index) => {
+            if (line.trim() === '') return null;
+            
+            // Day headers
+            if (line.includes('Day ') && line.includes(':')) {
+                return <h4 key={index} className="day-title">{line}</h4>;
+            }
+            // Bold markers
+            if (line.includes('**')) {
+                return <p key={index} className="time-label">{line.replace(/\*\*/g, '')}</p>;
+            }
+            // List items
+            if (line.trim().startsWith('-')) {
+                return <li key={index} className="activity-item">{line.trim()}</li>;
+            }
+            // Headings with #
+            if (line.trim().startsWith('#')) {
+                return <h3 key={index} className="section-heading">{line.replace(/^#+\s*/, '')}</h3>;
+            }
+            // Regular paragraphs
+            return <p key={index} className="regular-text">{line}</p>;
+        });
+    };
+
     return (
         <div className="itinerary-details">
             <div className="itinerary-header">
-                <h1>Detailed Itinerary View</h1>
-                <button className="edit-btn">
-                    <Edit2 size={16} />
-                    Edit Itinerary
-                </button>
-            </div>
-
-            <div className="hero-section">
-                <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" alt="Kyoto" className="hero-bg" />
-                <div className="hero-overlay">
-                    <div className="hero-content">
-                        <h2>Kyoto & Osaka Adventure</h2>
-                        <p className="hero-date">Oct 15 - Oct 25, 2023</p>
-                        <div className="hero-progress-container">
-                            <div className="hero-progress-bar">
-                                <div className="hero-progress" style={{ width: '60%' }}></div>
-                            </div>
-                            <span className="hero-days-left">45 days to go</span>
-                        </div>
-                    </div>
-                </div>
+                <h1>Your Travel Itinerary</h1>
+                {itinerary && (
+                    <button className="edit-btn" onClick={() => setShowModal(true)}>
+                        <Edit2 size={16} />
+                        Generate New
+                    </button>
+                )}
             </div>
 
             <div className="details-grid">
                 <div className="plan-section">
                     <h3>Plan Your Trip</h3>
-                    <div className="actions-grid">
-                        <div className="action-card">
-                            <div className="action-icon flight">
-                                <Plane size={24} />
-                            </div>
-                            <div className="action-text">
-                                <h4>Add Flights</h4>
-                                <button className="action-btn">Add Flights</button>
-                            </div>
-                        </div>
-
-                        <div className="action-card">
-                            <div className="action-icon hotel">
-                                <Hotel size={24} />
-                            </div>
-                            <div className="action-text">
-                                <h4>Book Hotels</h4>
-                                <button className="action-btn">Book Hotels</button>
-                            </div>
-                        </div>
-
-                        <div className="action-card">
-                            <div className="action-icon activity">
-                                <Map size={24} />
-                            </div>
-                            <div className="action-text">
-                                <h4>Explore Activities</h4>
-                                <button className="action-btn">Explore Activities</button>
-                            </div>
-                        </div>
-
-                        <div className="action-card">
-                            <div className="action-icon budget">
-                                <Wallet size={24} />
-                            </div>
-                            <div className="action-text">
-                                <h4>Manage Budget</h4>
-                                <button className="action-btn">Manage Budget</button>
-                            </div>
-                        </div>
-                    </div>
+                    <button 
+                        className="plan-trip-btn"
+                        onClick={() => setShowModal(true)}
+                    >
+                        <Sparkles size={20} />
+                        Create New Itinerary
+                    </button>
                 </div>
 
                 <div className="timeline-section">
-                    <h3>Your Itinerary</h3>
-                    <div className="timeline">
-                        <div className="timeline-item">
-                            <div className="timeline-dot"></div>
-                            <div className="timeline-content">
-                                <h4>Day 1: Arrival in Osaka</h4>
-                                <div className="timeline-card">
-                                    <img src="https://images.unsplash.com/photo-1590559399607-99d51e854632?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="Osaka" />
-                                    <div className="timeline-details">
-                                        <p><strong>Arrivara in Osaka</strong></p>
-                                        <p>23:00 - 05 hours</p>
-                                        <p>03:00 - 25 min</p>
-                                    </div>
+                    <h3>Itinerary Generator</h3>
+                    
+                    {loading ? (
+                        <div className="loading-state">
+                            <Loader className="spinner" size={48} />
+                            <p>Generating your personalized itinerary...</p>
+                            <p className="loading-subtext">This may take a moment</p>
+                        </div>
+                    ) : (
+                        <div className="empty-state">
+                            <Sparkles size={64} color="#2A9D8F" style={{ marginBottom: '1rem', opacity: 0.5 }} />
+                            <h4>AI-Powered Travel Planning</h4>
+                            <p>Create personalized itineraries tailored to your preferences, budget, and interests</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Trip Planning Modal */}
+            {showModal && (
+                <div className="modal-overlay" onClick={() => setShowModal(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>Plan Your Trip</h2>
+                            <button className="close-btn" onClick={() => setShowModal(false)}>
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        {error && (
+                            <div style={{ padding: '1rem 1.5rem', background: '#FEE', color: '#C00', borderRadius: '8px', margin: '0 1.5rem' }}>
+                                {error}
+                            </div>
+                        )}
+
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-group">
+                                <label>Destination *</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g., Paris, Tokyo, New York"
+                                    value={formData.destination}
+                                    onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
+                                    required
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Number of Days</label>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    max="30"
+                                    value={formData.days}
+                                    onChange={(e) => setFormData({ ...formData, days: parseInt(e.target.value) })}
+                                    required
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Budget Level</label>
+                                <select
+                                    value={formData.budget}
+                                    onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                                >
+                                    {budgetOptions.map(option => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Interests</label>
+                                <div className="interests-grid">
+                                    {interestOptions.map(interest => (
+                                        <label key={interest} className="checkbox-label">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.interests.includes(interest)}
+                                                onChange={() => handleInterestToggle(interest)}
+                                            />
+                                            <span>{interest}</span>
+                                        </label>
+                                    ))}
                                 </div>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Additional Notes</label>
+                                <textarea
+                                    placeholder="Any special requirements or preferences..."
+                                    rows="4"
+                                    value={formData.additionalNotes}
+                                    onChange={(e) => setFormData({ ...formData, additionalNotes: e.target.value })}
+                                />
+                            </div>
+
+                            <button type="submit" className="generate-btn" disabled={loading}>
+                                {loading ? (
+                                    <>
+                                        <Loader className="spinner" size={20} />
+                                        Generating...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Sparkles size={20} />
+                                        Generate Itinerary
+                                    </>
+                                )}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Itinerary Results Modal */}
+            {showItineraryModal && itinerary && (
+                <div className="modal-overlay itinerary-modal-overlay" onClick={() => setShowItineraryModal(false)}>
+                    <div className="itinerary-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="itinerary-modal-header">
+                            <div className="itinerary-title-section">
+                                <Sparkles size={28} color="#2A9D8F" />
+                                <div>
+                                    <h2>{itinerary.days}-Day {itinerary.destination} Itinerary</h2>
+                                    <p className="itinerary-subtitle">
+                                        {itinerary.budget.charAt(0).toUpperCase() + itinerary.budget.slice(1)} Budget • 
+                                        Personalized for You
+                                    </p>
+                                </div>
+                            </div>
+                            <button className="close-btn" onClick={() => setShowItineraryModal(false)}>
+                                <X size={24} />
+                            </button>
+                        </div>
+                        
+                        <div className="itinerary-modal-content">
+                            <div className="itinerary-text">
+                                {formatItinerary(itinerary.content)}
                             </div>
                         </div>
 
-                        <div className="timeline-item">
-                            <div className="timeline-dot"></div>
-                            <div className="timeline-content">
-                                <h4>Day 2: Osaka Castle & Food Tour</h4>
-                                <div className="timeline-card">
-                                    <img src="https://images.unsplash.com/photo-1590253230530-1b70bbc97733?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="Osaka Castle" />
-                                    <div className="timeline-details">
-                                        <p><strong>07:00 - Osaka</strong></p>
-                                        <p>14:00 - 15 hours</p>
-                                        <p>09:00 - 25 min</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="timeline-item">
-                            <div className="timeline-dot"></div>
-                            <div className="timeline-content">
-                                <h4>Day 3: Train to Kyoto</h4>
-                                <div className="timeline-card">
-                                    <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" alt="Kyoto" />
-                                    <div className="timeline-details">
-                                        <p><strong>09:00 - Osaka</strong></p>
-                                        <p>13:00 - 25 hours</p>
-                                        <p>09:30 - 17 min</p>
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="itinerary-modal-footer">
+                            <button 
+                                className="secondary-btn" 
+                                onClick={() => {
+                                    setShowItineraryModal(false);
+                                    setShowModal(true);
+                                }}
+                            >
+                                Generate New
+                            </button>
+                            <button 
+                                className="primary-btn"
+                                onClick={() => setShowItineraryModal(false)}
+                            >
+                                Save Itinerary
+                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };

@@ -91,13 +91,13 @@ const Profile = () => {
     return (
       <div className="dashboard">
         <div className="dashboard-header">
-          <div className="create-banner" style={{ background: 'linear-gradient(135deg, #457B9D 0%, #1D3557 100%)' }}>
+          <div className="create-banner" style={{ background: '#FFFFFF' }}>
             <div className="create-icon">
-              <User size={32} color="#FFF" />
+              <User size={32} color="#1E4D3A" />
             </div>
             <div className="create-text">
-              <h2 style={{ color: '#FFF' }}>My Profile</h2>
-              <p style={{ color: 'rgba(255,255,255,0.9)' }}>Manage your account and preferences.</p>
+              <h2 style={{ color: '#0F2920' }}>My Profile</h2>
+              <p style={{ color: '#547A68' }}>Manage your account and preferences.</p>
             </div>
           </div>
         </div>

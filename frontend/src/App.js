@@ -35,7 +35,6 @@ function App() {
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/itinerary" element={<ItineraryDetails />} />
                   <Route path="/tips" element={<Tips />} />
-                  <Route path="/trips" element={<div>Trips Page (Coming Soon)</div>} />
                   <Route path="/explore" element={<Explore />} />
                   <Route path="/profile" element={<Profile />} />
                 </Routes>

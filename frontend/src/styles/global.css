@@ -1,15 +1,15 @@
 :root {
-    --primary-color: #2D6A4F;
+    --primary-color: #1E4D3A;
     /* Deep Green */
-    --secondary-color: #40916C;
+    --secondary-color: #2C6B52;
     /* Medium Green */
-    --accent-color: #D8F3DC;
+    --accent-color: #B8D9C9;
     /* Light Green/Mint */
     --text-dark: #1B4332;
     /* Very Dark Green for text */
-    --text-light: #74C69D;
+    --text-light: #547A68;
     /* Lighter Green for secondary text */
-    --background-light: #F0FDF4;
+    --background-light: #E8F0EC;
     /* Very light mint background */
     --white: #FFFFFF;
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
