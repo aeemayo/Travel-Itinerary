@@ -9,6 +9,7 @@ import json
 import urllib3
 import random
 import string
+import threading
 from werkzeug.utils import secure_filename
 
 # Disable SSL warnings (optional, for development only)
@@ -439,7 +440,18 @@ If you didn't request this code, please ignore this email.
 Best regards,
 Travel Itinerary Team'''
             )
-            mail.send(msg)
+            
+            # Send email asynchronously using a thread
+            def send_async_email(app, msg):
+                with app.app_context():
+                    try:
+                        mail.send(msg)
+                    except Exception as e:
+                        print(f"Async email error: {str(e)}")
+
+            # Start thread
+            thread = threading.Thread(target=send_async_email, args=(app, msg))
+            thread.start()
             
             return jsonify({
                 'success': True,
@@ -731,5 +743,9 @@ if __name__ == '__main__':
     # Set FLASK_DEBUG=false in production (Render environment variables)
     debug = os.getenv('FLASK_DEBUG', 'true').lower() == 'true'
     # Set FLASK_HOST=0.0.0.0 in production to be accessible externally
-    host = os.getenv('FLASK_HOST', '127.0.0.1')
+    # Render sets RENDER=true automatically
+    if os.getenv('RENDER'):
+        host = '0.0.0.0'
+    else:
+        host = os.getenv('FLASK_HOST', '127.0.0.1')
     app.run(debug=debug, host=host, port=port)
