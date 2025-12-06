@@ -226,7 +226,7 @@ const Profile = () => {
             </div>
           </div>
 
-          <div className="recent-itineraries">
+          {/* <div className="recent-itineraries">
             <h3>Travel Stats</h3>
             <div className="recent-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
               <div className="recent-card" style={{ textAlign: 'center', padding: '30px' }}>
@@ -238,7 +238,7 @@ const Profile = () => {
                 <p style={{ color: '#666' }}>Cities Explored</p>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     );
