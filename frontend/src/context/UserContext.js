@@ -1,5 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import API_BASE_URL from '../config';
+import { auth } from '../firebase';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 const UserContext = createContext(null);
 
@@ -10,15 +12,30 @@ export const UserProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Check localStorage for saved user on mount
-        const savedUser = localStorage.getItem('travel_user');
-        if (savedUser) {
-            const parsedUser = JSON.parse(savedUser);
-            setUser(parsedUser);
-            // Fetch itineraries from backend
-            fetchItineraries(parsedUser.email);
-        }
-        setLoading(false);
+        // Listen for Firebase auth state changes
+        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+            if (firebaseUser) {
+                // User is signed in
+                const userData = {
+                    id: firebaseUser.uid,
+                    email: firebaseUser.email,
+                    name: firebaseUser.displayName || '',
+                    avatar: firebaseUser.photoURL || '',
+                    joinedDate: new Date().toLocaleDateString()
+                };
+                setUser(userData);
+                localStorage.setItem('travel_user', JSON.stringify(userData));
+                fetchItineraries(firebaseUser.email);
+            } else {
+                // User is signed out
+                setUser(null);
+                setItineraries([]);
+                localStorage.removeItem('travel_user');
+            }
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
     }, []);
 
     const fetchItineraries = async (email) => {
@@ -44,10 +61,13 @@ export const UserProvider = ({ children }) => {
         }
     };
 
-    const logout = () => {
-        setUser(null);
-        setItineraries([]);
-        localStorage.removeItem('travel_user');
+    const logout = async () => {
+        try {
+            await signOut(auth);
+            // State cleanup is handled by onAuthStateChanged
+        } catch (error) {
+            console.error("Failed to sign out:", error);
+        }
     };
 
     const updateProfile = (updates) => {
