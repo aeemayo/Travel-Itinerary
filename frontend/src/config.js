@@ -1,3 +1,5 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://travel-itinerary-2-rqim.onrender.com';
+// For production, set REACT_APP_API_URL in Vercel environment variables
+// For local development, this defaults to localhost
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 export default API_BASE_URL;
