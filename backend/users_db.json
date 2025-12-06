@@ -2,6 +2,44 @@
   "keemeayo@gmail.com": {
     "email": "keemeayo@gmail.com",
     "name": "ayomide",
-    "avatar": "http://localhost:5000/static/uploads/8108835_audi.png"
+    "avatar": "http://localhost:5000/static/uploads/8108835_audi.png",
+    "itineraries": [
+      {
+        "id": "1765012361949",
+        "destination": "Bali",
+        "days": 4,
+        "budget": "moderate",
+        "content": "**Day 1: Arrival in Bali**\n\nMorning:\n- Arrival at Ngurah Rai International Airport\n- Check-in at selected accommodation\n\nAfternoon:\n- Relax by the beach at Kuta or Seminyak\n- Lunch at a local Warung for authentic Balinese cuisine\n\nEvening:\n- Explore the vibrant nightlife in Seminyak or Legian\n- Dinner at a beachfront restaurant\n\nAccommodation: \n- **Recommended Accommodation:** The Anvaya Beach Resort Bali (Approx. $100-$150 per night)\n\nTransportation:\n- Private airport transfer to the hotel\n- Rent a scooter or hire a driver for local transportation\n\nDaily Budget: \n- Estimated daily budget: $50-$80 per person\n\nMust-Visit Attractions:\n- Kuta Beach for surfing and sunsets\n- Seminyak for shopping and dining\n\nLocal Food Recommendations:\n- Nasi Goreng (Indonesian fried rice)\n- Babi Guling (suckling pig)\n\nBest Time to Visit Attractions:\n- Kuta Beach: Sunset for the best views\n- Seminyak: Evening for the nightlife\n\n**Day 2: Ubud Cultural Experience**\n\nMorning:\n- Visit Tegalalang Rice Terraces for a scenic walk\n- Explore Ubud Monkey Forest\n\nAfternoon:\n- Visit Ubud Palace for a glimpse into Balinese history\n- Lunch at a local Warung in Ubud\n\nEvening:\n- Attend a traditional Balinese dance performance\n- Dinner at a local restaurant in Ubud\n\nAccommodation: \n- **Recommended Accommodation:** Alaya Resort Ubud (Approx. $80-$120 per night)\n\nTransportation:\n- Rent a car with a driver for the day\n\nDaily Budget: \n- Estimated daily budget: $60-$100 per person\n\nMust-Visit Attractions:\n- Tegalalang Rice Terraces for stunning views\n- Ubud Monkey Forest for wildlife encounters\n\nLocal Food Recommendations:\n- Bebek Betutu (slow-cooked duck)\n- Lawar (traditional Balinese salad)\n\nBest Time to Visit Attractions:\n- Tegalalang Rice Terraces: Morning for fewer crowds\n- Ubud Palace: Afternoon for guided tours\n\n**Day 3: Adventure in Nusa Penida**\n\nMorning:\n- Take a boat to Nusa Penida island\n- Visit Kelingking Beach for breathtaking views\n\nAfternoon:\n- Snorkel at Crystal Bay for marine life exploration\n- Lunch at a beachside Warung\n\nEvening:\n- Explore Broken Beach and Angel's Billabong\n- Dinner at a local restaurant in Nusa Penida\n\nAccommodation: \n- **Recommended Accommodation:** Semabu Hills Hotel Nusa Penida (Approx. $50-$80 per night)\n\nTransportation:\n- Public boat or private tour to Nusa Penida\n\nDaily Budget: \n- Estimated daily budget: $50-$80 per person\n\nMust-Visit Attractions:\n- Kelingking Beach for iconic cliffs\n- Crystal Bay for snorkeling\n\nLocal Food Recommendations:\n- Grilled seafood by the beach\n- Nasi Campur (mixed rice dish)\n\nBest Time to Visit Attractions:\n- Kelingking Beach: Morning for the best lighting\n- Crystal Bay: Afternoon for snorkeling\n\n**Day 4: Relaxation and Departure**\n\nMorning:\n- Enjoy a relaxing morning at the hotel or explore nearby beaches\n\nAfternoon:\n- Visit a local spa for a traditional Balinese massage\n- Lunch at a beachfront restaurant\n\nEvening:\n- Last-minute shopping in Seminyak or Kuta\n- Transfer to the airport for departure\n\nTransportation:\n- Private transfer to the airport\n\nDaily Budget: \n- Estimated daily budget: $50-$80 per person\n\n**General Tips and Cultural Considerations:**\n- Respect local customs and dress modestly when visiting temples\n- Bargain when shopping at local markets\n- Be cautious of pickpockets in crowded areas\n- Stay hydrated and apply sunscreen throughout the day\n\n**Best Time to Visit Bali:**\n- April to October for dry season and ideal beach weather",
+        "imageUrl": "https://images.unsplash.com/photo-1542724308-e166db51a680?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDAxMjB8MHwxfHNlYXJjaHwxfHxCYWxpJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MHwwfHx8MTc2NTAxMjM2M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+        "interests": [
+          "Culture & History",
+          "Food & Dining",
+          "Nature & Wildlife",
+          "Adventure",
+          "Shopping",
+          "Nightlife"
+        ],
+        "createdAt": "2025-12-06T09:12:41.949Z",
+        "status": "planned"
+      }
+    ]
+  },
+  "test@test.com": {
+    "email": "test@test.com",
+    "name": "",
+    "avatar": "",
+    "itineraries": [
+      {
+        "id": "110359",
+        "destination": "Paris, France",
+        "days": 5,
+        "budget": "moderate",
+        "content": "Test itinerary content",
+        "imageUrl": "https://example.com/img.jpg",
+        "interests": [],
+        "createdAt": "2025-12-06T09:00:00Z",
+        "status": "planned"
+      }
+    ]
   }
 }

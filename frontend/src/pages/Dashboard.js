@@ -1,10 +1,45 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus } from 'lucide-react';
+import { Plus, Calendar, MapPin, Sparkles } from 'lucide-react';
+import { useUser } from '../context/UserContext';
 import './Dashboard.css';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { itineraries, refreshItineraries } = useUser();
+
+  useEffect(() => {
+    refreshItineraries();
+  }, []);
+
+  // Get the most recent itinerary as "upcoming trip"
+  const upcomingTrip = itineraries.length > 0 ? itineraries[0] : null;
+  
+  // Get up to 3 recent itineraries (excluding the first one if it exists)
+  const recentItineraries = itineraries.length > 1 ? itineraries.slice(1, 4) : [];
+
+  // Format date for display
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  };
+
+  // Calculate days since creation (for progress display)
+  const getDaysInfo = (dateStr, days) => {
+    if (!dateStr) return { progress: 50, daysText: 'Planning...' };
+    const created = new Date(dateStr);
+    const now = new Date();
+    const daysPassed = Math.floor((now - created) / (1000 * 60 * 60 * 24));
+    const progress = Math.min(100, (daysPassed / (days || 7)) * 100);
+    return {
+      progress: Math.max(10, progress),
+      daysText: daysPassed === 0 ? 'Just created' : `Created ${daysPassed} days ago`
+    };
+  };
+
+  // Default placeholder image
+  const defaultImage = 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80';
 
   return (
     <div className="dashboard">
@@ -25,54 +60,80 @@ const Dashboard = () => {
       <div className="dashboard-grid">
         <div className="upcoming-trip">
           <h3>Your Upcoming Trip</h3>
-          <div className="trip-card large">
-            <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" alt="Kyoto" className="trip-bg" />
-            <div className="trip-overlay">
-              <div className="trip-info">
-                <h2>Kyoto & Osaka Adventure</h2>
-                <div className="trip-meta">
-                  <span>Oct 15 - Oct 25, 2023</span>
+          {upcomingTrip ? (
+            <div className="trip-card large">
+              <img 
+                src={upcomingTrip.imageUrl || defaultImage} 
+                alt={upcomingTrip.destination} 
+                className="trip-bg"
+                onError={(e) => { e.target.src = defaultImage; }}
+              />
+              <div className="trip-overlay">
+                <div className="trip-info">
+                  <h2>{upcomingTrip.destination}</h2>
+                  <div className="trip-meta">
+                    <span>
+                      <Calendar size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+                      {upcomingTrip.days} days • {upcomingTrip.budget}
+                    </span>
+                  </div>
+                  <div className="progress-bar">
+                    <div 
+                      className="progress" 
+                      style={{ width: `${getDaysInfo(upcomingTrip.createdAt, upcomingTrip.days).progress}%` }}
+                    ></div>
+                  </div>
+                  <div className="days-left">
+                    {getDaysInfo(upcomingTrip.createdAt, upcomingTrip.days).daysText}
+                  </div>
+                  <button className="view-btn" onClick={() => navigate(`/itinerary/${upcomingTrip.id}`)}>View Itinerary</button>
                 </div>
-                <div className="progress-bar">
-                  <div className="progress" style={{ width: '60%' }}></div>
-                </div>
-                <div className="days-left">45 days to go</div>
-                <button className="view-btn" onClick={() => navigate('/itinerary')}>View Itinerary</button>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="empty-upcoming-trip">
+              <div className="empty-state-card">
+                <Sparkles size={48} color="#2A9D8F" style={{ opacity: 0.6 }} />
+                <h4>No trips planned yet</h4>
+                <p>Generate your first AI-powered itinerary!</p>
+                <button className="create-trip-btn" onClick={() => navigate('/itinerary')}>
+                  <Plus size={18} />
+                  Create Trip
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="recent-itineraries">
           <h3>Recent Itineraries</h3>
-          <div className="recent-grid">
-            <div className="recent-card">
-              <div className="card-image">
-                <img src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?ixlib=rb-4.0.3&auto=format&fit=crop&w=686&q=80" alt="Italy" />
-                <span className="status-tag draft">Draft</span>
-              </div>
-              <h4>Summer in Italy</h4>
-              <p>(Jul 2024)</p>
+          {recentItineraries.length > 0 ? (
+            <div className="recent-grid">
+              {recentItineraries.map((trip, index) => (
+                <div key={trip.id || index} className="recent-card" onClick={() => navigate(`/itinerary/${trip.id}`)}>
+                  <div className="card-image">
+                    <img 
+                      src={trip.imageUrl || defaultImage} 
+                      alt={trip.destination}
+                      onError={(e) => { e.target.src = defaultImage; }}
+                    />
+                    <span className={`status-tag ${trip.status === 'draft' ? 'draft' : 'planned'}`}>
+                      {trip.status === 'draft' ? 'Draft' : 'Planned'}
+                    </span>
+                  </div>
+                  <h4>{trip.destination}</h4>
+                  <p>({formatDate(trip.createdAt)})</p>
+                </div>
+              ))}
             </div>
-
-            <div className="recent-card">
-              <div className="card-image">
-                <img src="https://images.unsplash.com/photo-1496442226666-8d4a0e62e6e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="NYC" />
-                <span className="status-tag planned">Planned</span>
+          ) : (
+            <div className="empty-recent">
+              <div className="empty-state-small">
+                <MapPin size={32} color="#666" style={{ opacity: 0.5 }} />
+                <p>Your generated itineraries will appear here</p>
               </div>
-              <h4>Weekend in NYC</h4>
-              <p>(Dec 2023)</p>
             </div>
-
-            <div className="recent-card">
-              <div className="card-image">
-                <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?ixlib=rb-4.0.3&auto=format&fit=crop&w=1173&q=80" alt="Paris" />
-                <span className="status-tag planned">Planned</span>
-              </div>
-              <h4>Paris Getaway</h4>
-              <p>(Mar 2024)</p>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

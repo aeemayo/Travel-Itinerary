@@ -12,13 +12,13 @@ import { UserProvider, useUser } from './context/UserContext';
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useUser();
-  
+
   if (loading) return <div>Loading...</div>;
-  
+
   if (!user) {
     return <Login />;
   }
-  
+
   return children;
 };
 
@@ -34,6 +34,7 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/itinerary" element={<ItineraryDetails />} />
+                  <Route path="/itinerary/:id" element={<ItineraryDetails />} />
                   <Route path="/tips" element={<Tips />} />
                   <Route path="/explore" element={<Explore />} />
                   <Route path="/profile" element={<Profile />} />

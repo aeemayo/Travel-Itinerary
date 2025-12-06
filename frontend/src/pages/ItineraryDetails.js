@@ -1,13 +1,22 @@
-import React, { useState } from 'react';
-import { Edit2, Sparkles, X, Loader } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Edit2, Sparkles, X, Loader, Check, ArrowLeft, Calendar, DollarSign, MapPin } from 'lucide-react';
+import { useUser } from '../context/UserContext';
 import './ItineraryDetails.css';
 
 const ItineraryDetails = () => {
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const { saveItinerary, itineraries, refreshItineraries } = useUser();
+    
     const [showModal, setShowModal] = useState(false);
     const [showItineraryModal, setShowItineraryModal] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [saving, setSaving] = useState(false);
+    const [saved, setSaved] = useState(false);
     const [error, setError] = useState('');
     const [itinerary, setItinerary] = useState(null);
+    const [viewingSaved, setViewingSaved] = useState(false);
     const [formData, setFormData] = useState({
         destination: '',
         days: 3,
@@ -15,6 +24,21 @@ const ItineraryDetails = () => {
         interests: [],
         additionalNotes: ''
     });
+
+    // Load saved itinerary when ID is provided
+    useEffect(() => {
+        if (id && itineraries.length > 0) {
+            const savedItinerary = itineraries.find(it => it.id === id);
+            if (savedItinerary) {
+                setItinerary(savedItinerary);
+                setViewingSaved(true);
+                setSaved(true);
+            }
+        } else if (id && itineraries.length === 0) {
+            // Refresh itineraries if not loaded yet
+            refreshItineraries();
+        }
+    }, [id, itineraries]);
 
     const budgetOptions = [
         { value: 'budget', label: 'Budget ($)' },
@@ -57,13 +81,34 @@ const ItineraryDetails = () => {
             const data = await response.json();
 
             if (data.success) {
-                setItinerary({
+                const newItinerary = {
+                    id: String(Date.now()),
                     destination: data.destination,
                     days: data.days,
                     budget: data.budget,
-                    content: data.itinerary
-                });
+                    content: data.itinerary,
+                    imageUrl: data.imageUrl || '',
+                    interests: formData.interests,
+                    createdAt: new Date().toISOString(),
+                    status: 'planned'
+                };
+                
+                setItinerary(newItinerary);
+                setViewingSaved(false);
+                setSaved(false);
                 setShowModal(false);
+                
+                // Auto-save the itinerary
+                setSaving(true);
+                const saveResult = await saveItinerary(newItinerary);
+                setSaving(false);
+                
+                if (saveResult.success) {
+                    setSaved(true);
+                    // Update URL to include the new ID
+                    navigate(`/itinerary/${newItinerary.id}`, { replace: true });
+                }
+                
                 // Show itinerary in a stylish modal
                 setTimeout(() => setShowItineraryModal(true), 300);
             } else {
@@ -78,6 +123,7 @@ const ItineraryDetails = () => {
     };
 
     const formatItinerary = (text) => {
+        if (!text) return null;
         // Split the text into lines and format appropriately
         const lines = text.split('\n');
         return lines.map((line, index) => {
@@ -104,48 +150,90 @@ const ItineraryDetails = () => {
         });
     };
 
+    const getBudgetLabel = (budget) => {
+        const option = budgetOptions.find(b => b.value === budget);
+        return option ? option.label : budget;
+    };
+
+    // Default placeholder image
+    const defaultImage = 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80';
+
     return (
         <div className="itinerary-details">
             <div className="itinerary-header">
-                <h1>Your Travel Itinerary</h1>
-                {itinerary && (
-                    <button className="edit-btn" onClick={() => setShowModal(true)}>
-                        <Edit2 size={16} />
-                        Generate New
+                {viewingSaved && (
+                    <button className="back-btn" onClick={() => navigate('/')}>
+                        <ArrowLeft size={20} />
+                        Back to Dashboard
                     </button>
                 )}
+                <h1>{viewingSaved && itinerary ? itinerary.destination : 'Your Travel Itinerary'}</h1>
+                <button className="edit-btn" onClick={() => setShowModal(true)}>
+                    <Edit2 size={16} />
+                    {itinerary ? 'Generate New' : 'Create Itinerary'}
+                </button>
             </div>
 
-            <div className="details-grid">
-                <div className="plan-section">
-                    <h3>Plan Your Trip</h3>
-                    <button 
-                        className="plan-trip-btn"
-                        onClick={() => setShowModal(true)}
-                    >
-                        <Sparkles size={20} />
-                        Create New Itinerary
-                    </button>
-                </div>
-
-                <div className="timeline-section">
-                    <h3>Itinerary Generator</h3>
+            {/* Show saved itinerary content */}
+            {viewingSaved && itinerary ? (
+                <div className="saved-itinerary-view">
+                    <div className="itinerary-hero">
+                        <img 
+                            src={itinerary.imageUrl || defaultImage} 
+                            alt={itinerary.destination}
+                            className="hero-image"
+                            onError={(e) => { e.target.src = defaultImage; }}
+                        />
+                        <div className="hero-overlay">
+                            <h2>{itinerary.destination}</h2>
+                            <div className="hero-meta">
+                                <span><Calendar size={16} /> {itinerary.days} Days</span>
+                                <span><DollarSign size={16} /> {getBudgetLabel(itinerary.budget)}</span>
+                                {itinerary.interests && itinerary.interests.length > 0 && (
+                                    <span><MapPin size={16} /> {itinerary.interests.slice(0, 2).join(', ')}</span>
+                                )}
+                            </div>
+                        </div>
+                    </div>
                     
-                    {loading ? (
-                        <div className="loading-state">
-                            <Loader className="spinner" size={48} />
-                            <p>Generating your personalized itinerary...</p>
-                            <p className="loading-subtext">This may take a moment</p>
+                    <div className="itinerary-content-section">
+                        <div className="itinerary-text-content">
+                            {formatItinerary(itinerary.content)}
                         </div>
-                    ) : (
-                        <div className="empty-state">
-                            <Sparkles size={64} color="#2A9D8F" style={{ marginBottom: '1rem', opacity: 0.5 }} />
-                            <h4>AI-Powered Travel Planning</h4>
-                            <p>Create personalized itineraries tailored to your preferences, budget, and interests</p>
-                        </div>
-                    )}
+                    </div>
                 </div>
-            </div>
+            ) : (
+                <div className="details-grid">
+                    <div className="plan-section">
+                        <h3>Plan Your Trip</h3>
+                        <button 
+                            className="plan-trip-btn"
+                            onClick={() => setShowModal(true)}
+                        >
+                            <Sparkles size={20} />
+                            Create New Itinerary
+                        </button>
+                    </div>
+
+                    <div className="timeline-section">
+                        <h3>Itinerary Generator</h3>
+                        
+                        {loading ? (
+                            <div className="loading-state">
+                                <Loader className="spinner" size={48} />
+                                <p>Generating your personalized itinerary...</p>
+                                <p className="loading-subtext">This may take a moment</p>
+                            </div>
+                        ) : (
+                            <div className="empty-state">
+                                <Sparkles size={64} color="#2A9D8F" style={{ marginBottom: '1rem', opacity: 0.5 }} />
+                                <h4>AI-Powered Travel Planning</h4>
+                                <p>Create personalized itineraries tailored to your preferences, budget, and interests</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* Trip Planning Modal */}
             {showModal && (
@@ -257,7 +345,7 @@ const ItineraryDetails = () => {
                                     <h2>{itinerary.days}-Day {itinerary.destination} Itinerary</h2>
                                     <p className="itinerary-subtitle">
                                         {itinerary.budget.charAt(0).toUpperCase() + itinerary.budget.slice(1)} Budget • 
-                                        Personalized for You
+                                        {saved ? ' ✓ Saved' : ' Personalized for You'}
                                     </p>
                                 </div>
                             </div>
@@ -284,9 +372,19 @@ const ItineraryDetails = () => {
                             </button>
                             <button 
                                 className="primary-btn"
-                                onClick={() => setShowItineraryModal(false)}
+                                onClick={() => {
+                                    setShowItineraryModal(false);
+                                    setViewingSaved(true);
+                                }}
+                                disabled={saving}
                             >
-                                Save Itinerary
+                                {saving ? (
+                                    <><Loader className="spinner" size={16} /> Saving...</>
+                                ) : saved ? (
+                                    <><Check size={16} /> View Full Itinerary</>
+                                ) : (
+                                    'View Full Itinerary'
+                                )}
                             </button>
                         </div>
                     </div>

@@ -81,9 +81,16 @@ def update_user_profile(email, updates):
 OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY')
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
+# Unsplash API configuration for location images
+UNSPLASH_ACCESS_KEY = os.getenv('UNSPLASH_ACCESS_KEY')
+UNSPLASH_API_URL = "https://api.unsplash.com/search/photos"
+
 # Verify API key is set
 if not OPENROUTER_API_KEY:
     print("WARNING: OPENROUTER_API_KEY not set. Please add it to .env file")
+
+if not UNSPLASH_ACCESS_KEY:
+    print("WARNING: UNSPLASH_ACCESS_KEY not set. Image fetching will use fallback images.")
 
 def call_openrouter(prompt: str, max_tokens: int = 2000) -> str:
     """
@@ -129,6 +136,100 @@ def call_openrouter(prompt: str, max_tokens: int = 2000) -> str:
         raise Exception(f"SSL Connection Error: {str(e)}. Try updating certifi: pip install --upgrade certifi")
     except requests.exceptions.RequestException as e:
         raise Exception(f"OpenRouter API error: {str(e)}")
+
+def fetch_location_image(location: str) -> str:
+    """
+    Fetch a relevant image for a location using Unsplash API (web scraping)
+    Falls back to a placeholder if API key not set or request fails
+    """
+    # Fallback images for common destinations
+    fallback_images = {
+        'default': 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80',
+        'paris': 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&q=80',
+        'tokyo': 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80',
+        'new york': 'https://images.unsplash.com/photo-1496442226666-8d4a0e62e6e9?w=800&q=80',
+        'london': 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=80',
+        'dubai': 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&q=80',
+        'bali': 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800&q=80',
+        'rome': 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80',
+        'barcelona': 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=800&q=80',
+        'sydney': 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=800&q=80',
+    }
+    
+    location_lower = location.lower()
+    
+    # Check fallback first for common destinations
+    for city, url in fallback_images.items():
+        if city in location_lower:
+            # If no API key, use fallback directly
+            if not UNSPLASH_ACCESS_KEY:
+                return url
+            break
+    
+    # Try Unsplash API if key is available
+    if UNSPLASH_ACCESS_KEY:
+        try:
+            headers = {
+                "Authorization": f"Client-ID {UNSPLASH_ACCESS_KEY}",
+                "Accept-Version": "v1"
+            }
+            params = {
+                "query": f"{location} travel landmark",
+                "per_page": 1,
+                "orientation": "landscape"
+            }
+            
+            response = requests.get(
+                UNSPLASH_API_URL,
+                headers=headers,
+                params=params,
+                timeout=10,
+                verify=False
+            )
+            response.raise_for_status()
+            
+            data = response.json()
+            if data.get('results') and len(data['results']) > 0:
+                # Get regular size image URL
+                image_url = data['results'][0]['urls'].get('regular', data['results'][0]['urls'].get('small'))
+                print(f"✅ Fetched image for {location}: {image_url[:50]}...")
+                return image_url
+        except Exception as e:
+            print(f"⚠️ Failed to fetch image from Unsplash: {str(e)}")
+    
+    # Return fallback image
+    for city, url in fallback_images.items():
+        if city in location_lower:
+            return url
+    
+    return fallback_images['default']
+
+@app.route('/api/get-location-image', methods=['POST'])
+def get_location_image():
+    """
+    Fetch image for a specific location
+    """
+    try:
+        data = request.json
+        location = data.get('location', '')
+        
+        if not location:
+            return jsonify({'error': 'Location is required'}), 400
+        
+        image_url = fetch_location_image(location)
+        
+        return jsonify({
+            'success': True,
+            'imageUrl': image_url,
+            'location': location
+        })
+        
+    except Exception as e:
+        print(f"Error fetching location image: {str(e)}")
+        return jsonify({
+            'error': 'Failed to fetch image',
+            'details': str(e)
+        }), 500
 
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -178,12 +279,16 @@ Format the response in a clear, structured way with proper headings and bullet p
         # Call OpenRouter
         itinerary_text = call_openrouter(prompt, max_tokens=2000)
         
+        # Fetch location image
+        image_url = fetch_location_image(destination)
+        
         return jsonify({
             'success': True,
             'itinerary': itinerary_text,
             'destination': destination,
             'days': days,
-            'budget': budget
+            'budget': budget,
+            'imageUrl': image_url
         })
         
     except Exception as e:
@@ -425,6 +530,128 @@ def update_profile():
         print(f"Error updating profile: {str(e)}")
         return jsonify({
             'error': 'Failed to update profile',
+            'details': str(e)
+        }), 500
+
+@app.route('/api/user/save-itinerary', methods=['POST'])
+def save_itinerary():
+    """
+    Save a generated itinerary to user's profile
+    """
+    try:
+        data = request.json
+        email = data.get('email', '').strip()
+        
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
+        
+        itinerary = {
+            'id': data.get('id', str(random.randint(100000, 999999))),
+            'destination': data.get('destination', ''),
+            'days': data.get('days', 3),
+            'budget': data.get('budget', 'moderate'),
+            'content': data.get('content', ''),
+            'imageUrl': data.get('imageUrl', ''),
+            'interests': data.get('interests', []),
+            'createdAt': data.get('createdAt', ''),
+            'status': data.get('status', 'planned')
+        }
+        
+        # Load current user data
+        users_db = load_users_db()
+        if email not in users_db:
+            users_db[email] = {'email': email, 'name': '', 'avatar': '', 'itineraries': []}
+        
+        # Initialize itineraries array if not exists
+        if 'itineraries' not in users_db[email]:
+            users_db[email]['itineraries'] = []
+        
+        # Add new itinerary (prepend to keep most recent first)
+        users_db[email]['itineraries'].insert(0, itinerary)
+        
+        # Keep only last 20 itineraries to prevent storage bloat
+        users_db[email]['itineraries'] = users_db[email]['itineraries'][:20]
+        
+        if save_users_db(users_db):
+            return jsonify({
+                'success': True,
+                'message': 'Itinerary saved successfully',
+                'itinerary': itinerary
+            })
+        else:
+            return jsonify({
+                'error': 'Failed to save itinerary',
+                'details': 'Database write error'
+            }), 500
+        
+    except Exception as e:
+        print(f"Error saving itinerary: {str(e)}")
+        return jsonify({
+            'error': 'Failed to save itinerary',
+            'details': str(e)
+        }), 500
+
+@app.route('/api/user/itineraries', methods=['GET'])
+def get_user_itineraries():
+    """
+    Get all saved itineraries for a user
+    """
+    try:
+        email = request.args.get('email', '').strip()
+        
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
+        
+        users_db = load_users_db()
+        user_data = users_db.get(email, {})
+        itineraries = user_data.get('itineraries', [])
+        
+        return jsonify({
+            'success': True,
+            'itineraries': itineraries
+        })
+        
+    except Exception as e:
+        print(f"Error fetching itineraries: {str(e)}")
+        return jsonify({
+            'error': 'Failed to fetch itineraries',
+            'details': str(e)
+        }), 500
+
+@app.route('/api/user/delete-itinerary', methods=['POST'])
+def delete_itinerary():
+    """
+    Delete a saved itinerary
+    """
+    try:
+        data = request.json
+        email = data.get('email', '').strip()
+        itinerary_id = data.get('itineraryId', '')
+        
+        if not email or not itinerary_id:
+            return jsonify({'error': 'Email and itinerary ID are required'}), 400
+        
+        users_db = load_users_db()
+        if email in users_db and 'itineraries' in users_db[email]:
+            users_db[email]['itineraries'] = [
+                it for it in users_db[email]['itineraries'] 
+                if it.get('id') != itinerary_id
+            ]
+            
+            if save_users_db(users_db):
+                return jsonify({
+                    'success': True,
+                    'message': 'Itinerary deleted successfully'
+                })
+        
+        return jsonify({
+            'error': 'Itinerary not found'
+        }), 404
+        
+    except Exception as e:
+        print(f"Error deleting itinerary: {str(e)}")
+        return jsonify({
+            'error': 'Failed to delete itinerary',
             'details': str(e)
         }), 500
 
