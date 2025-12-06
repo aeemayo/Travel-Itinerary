@@ -726,9 +726,8 @@ def delete_itinerary():
             'details': str(e)
         }), 500
 
-# if __name__ == '__main__':
-#     port = int(os.getenv('PORT', 5000))
-#     # Use 127.0.0.1 for local development (no network prompts)
-#     # Set FLASK_HOST=0.0.0.0 in production if you need external access
-#     host = os.getenv('FLASK_HOST', '127.0.0.1')
-#     app.run(debug=True, host=host, port=port)
+if __name__ == '__main__':
+    port = int(os.getenv('PORT', 5000))
+    # Set FLASK_DEBUG=false in production (Render environment variables)
+    debug = os.getenv('FLASK_DEBUG', 'true').lower() == 'true'
+    app.run(debug=debug, port=port)
