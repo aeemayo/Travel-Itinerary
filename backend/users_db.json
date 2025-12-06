@@ -5,6 +5,56 @@
     "avatar": "http://localhost:5000/static/uploads/8108835_audi.png",
     "itineraries": [
       {
+        "id": "1765013779225",
+        "destination": "Abuja",
+        "days": 4,
+        "budget": "luxury",
+        "content": "**Day 1: Arrival in Abuja**\n\n- Morning: Arrival at Nnamdi Azikiwe International Airport\n- Afternoon: Check-in at Transcorp Hilton Abuja (Approx. $200/night)\n- Evening: Relax at the hotel's spa followed by a gourmet dinner at Zuma Restaurant\n\n**Day 2: Cultural Exploration**\n\n- Morning: Visit the National Mosque, a symbol of Islam in Nigeria (best time to visit: early morning)\n- Afternoon: Explore the Nigerian National Mosque and the nearby Arts and Crafts Village for unique souvenirs\n- Evening: Enjoy a traditional Nigerian dinner at Nkoyo Restaurant\n\n**Day 3: Nature & Nightlife**\n\n- Morning: Visit the Aso Rock, a prominent feature in the city landscape (best time to visit: morning)\n- Afternoon: Head to the Jabi Lake for a relaxing boat ride or picnic\n- Evening: Experience Abuja's vibrant nightlife at Sky Bar Rooftop Lounge with stunning city views\n\n**Day 4: Shopping & Departure**\n\n- Morning: Shop for luxury items at the Ceddi Plaza or Wuse Market\n- Afternoon: Visit the Millennium Park for a peaceful nature walk\n- Evening: Departure from Nnamdi Azikiwe International Airport\n\n**Accommodations:**\n- Transcorp Hilton Abuja (Approx. $200/night)\n- Fraser Suites Abuja (Approx. $150/night)\n\n**Transportation:**\n- Private car rental or hotel-arranged transportation\n- Uber or Taxify for shorter distances\n\n**Estimated Daily Budget Breakdown:**\n- Accommodation: $200\n- Meals: $100\n- Transportation: $50\n- Activities: $150\n- Total: $500/day\n\n**Must-visit Attractions:**\n- National Mosque\n- Aso Rock\n- Arts and Crafts Village\n- Jabi Lake\n- Millennium Park\n\n**Hidden Gems:**\n- Gurara Waterfalls\n- Usman Dam\n- Katampe Hill\n\n**Local Food Recommendations:**\n- Suya (grilled meat skewers)\n- Pounded yam with egusi soup\n- Jollof rice\n- Kilishi (spicy dried meat)\n\n**Practical Tips & Cultural Considerations:**\n- Dress modestly when visiting religious sites\n- Respect local customs and traditions\n- Beware of pickpockets in crowded areas\n- Bargain when shopping at local markets\n\n**Best Time to Visit Each Attraction:**\n- National Mosque: Early morning\n- Aso Rock: Morning\n- Jabi Lake: Afternoon\n- Arts and Crafts Village: Afternoon\n- Millennium Park: Afternoon",
+        "imageUrl": "https://images.unsplash.com/photo-1638969992327-8f7740b8c859?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDAxMjB8MHwxfHNlYXJjaHwxfHxBYnVqYSUyME5pZ2VyaWElMjBjYXBpdGFsJTIwY2l0eXxlbnwxfDB8fHwxNzY1MDEzNzgwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+        "interests": [
+          "Culture & History",
+          "Nightlife",
+          "Shopping",
+          "Food & Dining",
+          "Nature & Wildlife"
+        ],
+        "createdAt": "2025-12-06T09:36:19.225Z",
+        "status": "planned"
+      },
+      {
+        "id": "1765013296884",
+        "destination": "lagos",
+        "days": 3,
+        "budget": "moderate",
+        "content": "**Day 1: Explore Cultural & Historical Sites**\n\n**Morning:**\n- Visit the National Museum Lagos to learn about Nigeria's cultural history.\n- Time: 9:00 AM - 12:00 PM\n\n**Afternoon:**\n- Explore the iconic Lekki Conservation Centre for a dose of nature & wildlife.\n- Time: 1:00 PM - 4:00 PM\n\n**Evening:**\n- Head to Freedom Park Lagos for a cultural evening with live music and performances.\n- Time: 6:00 PM onwards\n\n**Accommodation:** The Blowfish Hotel (Approx. $80 per night)\n\n**Transportation:** Use ride-hailing services or rent a car for flexibility.\n\n**Daily Budget Breakdown:**\n- Accommodation: $80\n- Meals: $30\n- Entrance Fees: $20\n- Transportation: $20\n- Total: $150\n\n**Must-Visit Attractions & Hidden Gems:**\n- Must-Visit: National Museum Lagos, Lekki Conservation Centre\n- Hidden Gem: Nike Art Gallery for unique art pieces.\n\n**Local Food Recommendations:**\n- Try local delicacies like Jollof Rice, Suya, and Pounded Yam at Terra Kulture.\n\n**Practical Tips & Cultural Considerations:**\n- Respect local customs and traditions, dress modestly at cultural sites.\n- Bargain at markets for a better shopping experience.\n\n**Best Time to Visit Each Attraction:**\n- National Museum Lagos: Morning\n- Lekki Conservation Centre: Afternoon\n- Freedom Park Lagos: Evening\n\n---\n\n**Day 2: Shopping & Nightlife Experience**\n\n**Morning:**\n- Visit Lekki Arts & Crafts Market for unique souvenirs and traditional crafts.\n- Time: 10:00 AM - 12:00 PM\n\n**Afternoon:**\n- Explore The Palms Shopping Mall for a mix of local and international brands.\n- Time: 1:00 PM - 3:00 PM\n\n**Evening:**\n- Experience the vibrant nightlife at Quilox Nightclub for music and dancing.\n- Time: 9:00 PM onwards\n\n**Accommodation:** The George Hotel (Approx. $100 per night)\n\n**Transportation:** Consider using public transportation for convenience.\n\n**Daily Budget Breakdown:**\n- Accommodation: $100\n- Meals: $40\n- Shopping: $50\n- Nightlife: $30\n- Total: $220\n\n**Must-Visit Attractions & Hidden Gems:**\n- Must-Visit: Lekki Arts & Crafts Market, The Palms Shopping Mall\n- Hidden Gem: Jazzhole for unique music and book finds.\n\n**Local Food Recommendations:**\n- Enjoy a seafood dinner at the popular Yellow Chilli Restaurant.\n\n**Practical Tips & Cultural Considerations:**\n- Be cautious of pickpockets in crowded areas.\n- Respect the club's dress code for entry.\n\n**Best Time to Visit Each Attraction:**\n- Lekki Arts & Crafts Market: Morning\n- The Palms Shopping Mall: Afternoon\n- Quilox Nightclub: Evening\n\n---\n\n**Day 3: Relaxation & Exploration**\n\n**Morning:**\n- Take a boat ride to Tarkwa Bay Beach for a relaxing morning by the sea.\n- Time: 9:00 AM - 12:00 PM\n\n**Afternoon:**\n- Explore the stunning Lekki Beach for water activities and beach vibes.\n- Time: 1:00 PM - 4:00 PM\n\n**Evening:**\n- Enjoy a sunset cruise along Lagos Lagoon for a picturesque end to the trip.\n- Time: 5:00 PM onwards\n\n**Accommodation:** Eko Hotels & Suites (Approx. $120 per night)\n\n**Transportation:** Opt for a guided tour for hassle-free exploration.\n\n**Daily Budget Breakdown:**\n- Accommodation: $120\n- Meals: $50\n- Activities: $40\n- Transportation: $30\n- Total: $240\n\n**Must-Visit Attractions & Hidden Gems:**\n- Must-Visit: Tarkwa Bay Beach, Lekki Beach\n- Hidden Gem: Lufasi Park for a peaceful nature retreat.\n\n**Local Food Recommendations:**\n- Savor a traditional Nigerian buffet at Yellow Chilli Restaurant.\n\n**Practical Tips & Cultural Considerations:**\n- Apply sunscreen at the beach to avoid sunburn.\n- Respect the environment by keeping the beaches clean.\n\n**Best Time to Visit Each Attraction:**\n- Tarkwa Bay Beach: Morning\n- Lekki Beach: Afternoon\n- Lagos Lagoon: Evening\n\n---\n\nThis detailed itinerary ensures a mix of cultural exploration, shopping, nightlife, and relaxation, catering to your varied interests during your 3-day trip to Lagos. Enjoy your adventure!",
+        "imageUrl": "https://images.unsplash.com/photo-1759060508753-a552e6ea6564?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDAxMjB8MHwxfHNlYXJjaHwxfHxsYWdvcyUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDB8MHx8fDE3NjUwMTMyOTh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+        "interests": [
+          "Culture & History",
+          "Nature & Wildlife",
+          "Shopping",
+          "Nightlife"
+        ],
+        "createdAt": "2025-12-06T09:28:16.884Z",
+        "status": "planned"
+      },
+      {
+        "id": "1765013060174",
+        "destination": "cambodia",
+        "days": 6,
+        "budget": "luxury",
+        "content": "**Day 1: Arrival in Siem Reap**\n\nMorning:\n- Arrive at Siem Reap International Airport\n- Check-in at luxury hotel\n- Relax and have a leisurely breakfast at the hotel\n\nAfternoon:\n- Visit Angkor Wat Temple Complex\n- Explore Angkor Thom and Bayon Temple\n- Enjoy a traditional Khmer dinner\n\nEvening:\n- Relax at the hotel spa\n- Stroll through Siem Reap Night Market for shopping and street food\n\n**Accommodation:** \n- Suggest staying at the Belmond La R\u00e9sidence d'Angkor (approx. $300/night)\n\n**Transportation:**\n- Private airport transfer provided by the hotel\n- Tuk-tuks can be arranged for exploring the temples\n\n**Daily Budget Breakdown:** \n- Accommodation: $300\n- Meals: $100\n- Transportation: $50\n- Activities: $200\n- Total: $650\n\n**Must-Visit Attractions:**\n- Angkor Wat Temple Complex\n- Angkor Thom and Bayon Temple\n- Siem Reap Night Market\n\n**Local Food Recommendations:**\n- Amok (traditional Khmer curry)\n- Lok Lak (stir-fried beef)\n- Num Banh Chok (Khmer noodles)\n\n**Practical Tips:**\n- Stay hydrated and carry sunscreen\n- Respect local customs and dress modestly at temples\n\n**Best Time to Visit Attractions:**\n- Angkor Wat: Early morning or late afternoon for fewer crowds\n\n---\n\n**Day 2: Siem Reap - Kulen Mountain**\n\nMorning:\n- Depart for Kulen Mountain National Park\n- Visit the River of 1000 Lingas and Phnom Kulen Waterfall\n\nAfternoon:\n- Enjoy a picnic lunch amidst nature\n- Discover the ancient temples of Preah Ang Thom\n\nEvening:\n- Return to Siem Reap\n- Dinner at a riverside restaurant\n\n**Accommodation:** \n- Stay at Phum Baitang Resort (approx. $400/night)\n\n**Transportation:**\n- Private car rental for the day trip to Kulen Mountain\n\n**Daily Budget Breakdown:** \n- Accommodation: $400\n- Meals: $150\n- Transportation: $100\n- Activities: $200\n- Total: $850\n\n**Hidden Gems:**\n- River of 1000 Lingas\n- Preah Ang Thom Temple\n\n**Local Food Recommendations:**\n- Fish amok\n- Bai Sach Chrouk (pork and rice)\n\n**Best Time to Visit Attractions:**\n- Kulen Mountain: Early morning for a peaceful experience\n\ncontinue...",
+        "imageUrl": "https://images.unsplash.com/photo-1707912258684-b925bcfa8568?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDAxMjB8MHwxfHNlYXJjaHwxfHxjYW1ib2RpYSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDB8MHx8fDE3NjUwMTMwNjF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+        "interests": [
+          "Adventure",
+          "Nature & Wildlife",
+          "Food & Dining",
+          "Nightlife",
+          "Photography"
+        ],
+        "createdAt": "2025-12-06T09:24:20.174Z",
+        "status": "planned"
+      },
+      {
         "id": "1765012361949",
         "destination": "Bali",
         "days": 4,

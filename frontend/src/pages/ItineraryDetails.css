@@ -774,3 +774,197 @@
 .itinerary-modal-content::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(135deg, #1D7568 0%, #1E6B5F 100%);
 }
+
+/* Back Button */
+.back-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    border: none;
+    color: #8B6FCC;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0.5rem 0;
+    transition: all 0.2s;
+}
+
+.back-btn:hover {
+    color: #A78BFA;
+    transform: translateX(-3px);
+}
+
+/* Saved Itinerary View */
+.saved-itinerary-view {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.itinerary-hero {
+    position: relative;
+    height: 300px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+.hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.itinerary-hero:hover .hero-image {
+    transform: scale(1.05);
+}
+
+.itinerary-hero .hero-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.5) 50%, transparent);
+    padding: 3rem 2rem 2rem;
+    color: white;
+}
+
+.itinerary-hero .hero-overlay h2 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.hero-meta {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.hero-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    backdrop-filter: blur(10px);
+}
+
+/* Itinerary Content Section */
+.itinerary-content-section {
+    background: linear-gradient(135deg, #1F2937 0%, #2B3A42 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid rgba(42, 157, 143, 0.2);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.itinerary-text-content {
+    max-height: none;
+    overflow: visible;
+}
+
+.itinerary-text-content .day-title {
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.15) 0%, rgba(167, 139, 250, 0.05) 100%);
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    border-left: 4px solid #8B6FCC;
+    margin: 2rem 0 1rem 0;
+    font-size: 1.2rem;
+}
+
+.itinerary-text-content .section-heading {
+    color: #2A9D8F;
+    font-size: 1.3rem;
+    margin: 2.5rem 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(42, 157, 143, 0.3);
+}
+
+.itinerary-text-content .time-label {
+    color: #E0E0E0;
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin: 1.5rem 0 0.75rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.itinerary-text-content .time-label::before {
+    content: '•';
+    color: #2A9D8F;
+    font-size: 1.5rem;
+}
+
+.itinerary-text-content .activity-item {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
+    margin-bottom: 0.75rem;
+    border-left: 3px solid rgba(42, 157, 143, 0.4);
+    color: #B0B0B0;
+    line-height: 1.7;
+    transition: all 0.2s;
+}
+
+.itinerary-text-content .activity-item:hover {
+    background: rgba(42, 157, 143, 0.08);
+    border-left-color: #2A9D8F;
+    transform: translateX(5px);
+}
+
+.itinerary-text-content .regular-text {
+    color: #B0B0B0;
+    line-height: 1.8;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+}
+
+/* Itinerary Header with Back Button */
+.itinerary-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Primary button disabled state */
+.primary-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.primary-btn:disabled:hover {
+    transform: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .itinerary-hero {
+        height: 220px;
+    }
+    
+    .itinerary-hero .hero-overlay h2 {
+        font-size: 1.5rem;
+    }
+    
+    .hero-meta {
+        gap: 0.75rem;
+    }
+    
+    .hero-meta span {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    .itinerary-content-section {
+        padding: 1.25rem;
+    }
+}

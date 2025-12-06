@@ -154,17 +154,75 @@ def fetch_location_image(location: str) -> str:
         'rome': 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80',
         'barcelona': 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=800&q=80',
         'sydney': 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=800&q=80',
+        'lagos nigeria': 'https://images.unsplash.com/photo-1618828665011-0abd973f7bb8?w=800&q=80',
+        'lagos': 'https://images.unsplash.com/photo-1618828665011-0abd973f7bb8?w=800&q=80',  # Default to Nigeria
     }
     
-    location_lower = location.lower()
+    location_lower = location.lower().strip()
     
-    # Check fallback first for common destinations
+    # Map of ambiguous city names to their most common context
+    # This helps resolve cities that exist in multiple countries
+    city_context_map = {
+        'lagos': 'Lagos Nigeria Africa city skyline',
+        'paris': 'Paris France Eiffel Tower',
+        'london': 'London England UK Big Ben',
+        'barcelona': 'Barcelona Spain Sagrada Familia',
+        'rome': 'Rome Italy Colosseum',
+        'sydney': 'Sydney Australia Opera House',
+        'melbourne': 'Melbourne Australia city',
+        'cairo': 'Cairo Egypt pyramids',
+        'athens': 'Athens Greece Acropolis',
+        'lima': 'Lima Peru South America',
+        'santiago': 'Santiago Chile South America',
+        'moscow': 'Moscow Russia Kremlin',
+        'berlin': 'Berlin Germany Brandenburg Gate',
+        'amsterdam': 'Amsterdam Netherlands canals',
+        'vienna': 'Vienna Austria palace',
+        'prague': 'Prague Czech Republic old town',
+        'budapest': 'Budapest Hungary parliament',
+        'istanbul': 'Istanbul Turkey mosque',
+        'mumbai': 'Mumbai India Gateway',
+        'delhi': 'Delhi India Lotus Temple',
+        'bangalore': 'Bangalore India tech city',
+        'shanghai': 'Shanghai China skyline',
+        'beijing': 'Beijing China Forbidden City',
+        'hong kong': 'Hong Kong China skyline harbor',
+        'singapore': 'Singapore Marina Bay',
+        'bangkok': 'Bangkok Thailand temple',
+        'kuala lumpur': 'Kuala Lumpur Malaysia Petronas',
+        'jakarta': 'Jakarta Indonesia city',
+        'manila': 'Manila Philippines city',
+        'cape town': 'Cape Town South Africa Table Mountain',
+        'johannesburg': 'Johannesburg South Africa city',
+        'nairobi': 'Nairobi Kenya Africa city',
+        'accra': 'Accra Ghana Africa city',
+        'abuja': 'Abuja Nigeria capital city',
+    }
+    
+    # Check fallback first for exact matches with context
     for city, url in fallback_images.items():
-        if city in location_lower:
+        if city in location_lower or location_lower in city:
             # If no API key, use fallback directly
             if not UNSPLASH_ACCESS_KEY:
                 return url
             break
+    
+    # Build a more specific search query
+    search_query = location
+    
+    # Check if we have a specific context for this city
+    for city_key, context in city_context_map.items():
+        if city_key in location_lower:
+            search_query = context
+            print(f"🔍 Using specific search context for {location}: {search_query}")
+            break
+    else:
+        # If no specific mapping, add generic travel terms
+        # Check if location already has country/region info
+        if ',' in location or len(location.split()) > 2:
+            search_query = f"{location} city skyline travel"
+        else:
+            search_query = f"{location} city travel landmark destination"
     
     # Try Unsplash API if key is available
     if UNSPLASH_ACCESS_KEY:
@@ -174,9 +232,10 @@ def fetch_location_image(location: str) -> str:
                 "Accept-Version": "v1"
             }
             params = {
-                "query": f"{location} travel landmark",
-                "per_page": 1,
-                "orientation": "landscape"
+                "query": search_query,
+                "per_page": 3,  # Get a few results to pick from
+                "orientation": "landscape",
+                "content_filter": "high"  # Filter for high-quality content
             }
             
             response = requests.get(
@@ -190,16 +249,28 @@ def fetch_location_image(location: str) -> str:
             
             data = response.json()
             if data.get('results') and len(data['results']) > 0:
-                # Get regular size image URL
-                image_url = data['results'][0]['urls'].get('regular', data['results'][0]['urls'].get('small'))
-                print(f"✅ Fetched image for {location}: {image_url[:50]}...")
+                # Try to find the best matching image
+                # Prefer images with relevant alt descriptions
+                best_image = data['results'][0]
+                location_words = set(location_lower.split())
+                
+                for result in data['results']:
+                    description = (result.get('description') or '').lower()
+                    alt_description = (result.get('alt_description') or '').lower()
+                    # Check if any location words appear in description
+                    if any(word in description or word in alt_description for word in location_words):
+                        best_image = result
+                        break
+                
+                image_url = best_image['urls'].get('regular', best_image['urls'].get('small'))
+                print(f"✅ Fetched image for {location} (query: {search_query}): {image_url[:60]}...")
                 return image_url
         except Exception as e:
             print(f"⚠️ Failed to fetch image from Unsplash: {str(e)}")
     
     # Return fallback image
     for city, url in fallback_images.items():
-        if city in location_lower:
+        if city in location_lower or location_lower in city:
             return url
     
     return fallback_images['default']

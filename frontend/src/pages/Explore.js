@@ -163,11 +163,6 @@ const Explore = () => {
                     </div>
                 </div>
 
-                <div className="search-bar">
-                    <Search className="search-icon" size={20} />
-                    <input type="text" placeholder="Search destinations, activities..." />
-                    <button className="explore-btn">Search</button>
-                </div>
             </div>
 
             <div className="dashboard-grid">
