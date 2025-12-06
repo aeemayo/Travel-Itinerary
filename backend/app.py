@@ -10,6 +10,7 @@ import urllib3
 import random
 import string
 import threading
+import resend
 from werkzeug.utils import secure_filename
 
 # Disable SSL warnings (optional, for development only)
@@ -29,6 +30,14 @@ app.config['MAIL_USE_SSL'] = os.getenv('MAIL_USE_SSL', 'True') == 'True'
 app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
+
+# Resend API configuration (for production email delivery)
+RESEND_API_KEY = os.getenv('RESEND_API_KEY')
+if RESEND_API_KEY:
+    resend.api_key = RESEND_API_KEY
+    print("✅ Resend API configured for email delivery")
+else:
+    print("⚠️ RESEND_API_KEY not set. Will fall back to Flask-Mail.")
 
 mail = Mail(app)
 
@@ -427,10 +436,7 @@ def send_code():
         
         # Send email
         try:
-            msg = Message(
-                subject='Your Travel Itinerary Login Code',
-                recipients=[email],
-                body=f'''Hello {name or 'there'},
+            email_body = f'''Hello {name or 'there'},
 
 Your login code is: {code}
 
@@ -440,19 +446,42 @@ If you didn't request this code, please ignore this email.
 
 Best regards,
 Travel Itinerary Team'''
-            )
-            
-            # Send email asynchronously using a thread
-            def send_async_email(app, msg):
-                with app.app_context():
-                    try:
-                        mail.send(msg)
-                    except Exception as e:
-                        print(f"Async email error: {str(e)}")
 
-            # Start thread
-            thread = threading.Thread(target=send_async_email, args=(app, msg))
-            thread.start()
+            # Use Resend API if available (for production/cloud platforms)
+            if RESEND_API_KEY:
+                def send_with_resend():
+                    try:
+                        sender_email = os.getenv('MAIL_DEFAULT_SENDER', 'onboarding@resend.dev')
+                        resend.emails.send({
+                            "from": sender_email,
+                            "to": [email],
+                            "subject": "Your Travel Itinerary Login Code",
+                            "text": email_body
+                        })
+                        print(f"✅ Email sent to {email} via Resend")
+                    except Exception as e:
+                        print(f"Resend email error: {str(e)}")
+                
+                thread = threading.Thread(target=send_with_resend)
+                thread.start()
+            else:
+                # Fallback to Flask-Mail for local development
+                msg = Message(
+                    subject='Your Travel Itinerary Login Code',
+                    recipients=[email],
+                    body=email_body
+                )
+                
+                def send_async_email(app, msg):
+                    with app.app_context():
+                        try:
+                            mail.send(msg)
+                            print(f"✅ Email sent to {email} via Flask-Mail")
+                        except Exception as e:
+                            print(f"Flask-Mail error: {str(e)}")
+
+                thread = threading.Thread(target=send_async_email, args=(app, msg))
+                thread.start()
             
             return jsonify({
                 'success': True,
@@ -460,11 +489,9 @@ Travel Itinerary Team'''
             })
         except Exception as email_error:
             print(f"Email sending error: {str(email_error)}")
-            # For development: return the code in response
             return jsonify({
                 'success': True,
-                'message': f'Email service unavailable. Your code is: {code}',
-                'dev_code': code  # Remove this in production
+                'message': f'Verification code sent to {email}'
             })
             
     except Exception as e:

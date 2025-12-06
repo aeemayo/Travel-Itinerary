@@ -5,3 +5,4 @@ python-dotenv==1.0.0
 requests
 sentient-agent-framework
 gunicorn==21.2.0
+resend==2.19.0
