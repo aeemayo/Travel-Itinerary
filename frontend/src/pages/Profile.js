@@ -226,19 +226,7 @@ const Profile = () => {
             </div>
           </div>
 
-          {/* <div className="recent-itineraries">
-            <h3>Travel Stats</h3>
-            <div className="recent-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
-              <div className="recent-card" style={{ textAlign: 'center', padding: '30px' }}>
-                <h2 style={{ fontSize: '2.5rem', color: '#2A9D8F', margin: 0 }}>{user.countries || 0}</h2>
-                <p style={{ color: '#666' }}>Countries Visited</p>
-              </div>
-              <div className="recent-card" style={{ textAlign: 'center', padding: '30px' }}>
-                <h2 style={{ fontSize: '2.5rem', color: '#E9C46A', margin: 0 }}>{user.cities || 0}</h2>
-                <p style={{ color: '#666' }}>Cities Explored</p>
-              </div>
-            </div>
-          </div> */}
+      
         </div>
       </div>
     );
