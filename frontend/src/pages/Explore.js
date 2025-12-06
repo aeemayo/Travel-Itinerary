@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, MapPin, Compass } from 'lucide-react';
+import {  MapPin, Compass } from 'lucide-react';
 import './Dashboard.css';
 
 const Explore = () => {
