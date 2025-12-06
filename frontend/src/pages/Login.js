@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { LogIn, User, Mail, Lock, CheckCircle } from 'lucide-react';
 import './Dashboard.css';
+import API_BASE_URL from '../config';
 
 const Login = () => {
   const [step, setStep] = useState(1); // 1: Details, 2: Verification
@@ -23,7 +24,7 @@ const Login = () => {
     setMessage('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/send-code', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/send-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -56,7 +57,7 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/verify-code', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/verify-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
