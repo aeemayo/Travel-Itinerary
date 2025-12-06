@@ -67,7 +67,21 @@ const ItineraryDetails = () => {
         }));
     };
 
-    if (data.success) {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/generate-itinerary`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
         const newItinerary = {
             id: String(Date.now()),
             destination: data.destination,
